@@ -46,7 +46,7 @@ PWM ch6;
 void setup() {
   Serial.begin(115200); // Serial for debug
   ch1.begin(2, 1); // ch1 on pin 2 reading PWM HIGH duration
-  ch2.begin(3, 1); // ch2 on pin 2 reading PWM HIGH duration
+  ch2.begin(3, 1); // ch2 on pin 3 reading PWM HIGH duration
   ch3.begin(18, 1); // ch3 on pin 18 reading PWM HIGH duration
   ch4.begin(19, 1); // ch4 on pin 19 reading PWM HIGH duration
   ch5.begin(20, 1); // ch5 on pin 20 reading PWM HIGH duration
