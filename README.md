@@ -1,32 +1,24 @@
 Arduino PWM Reader!
-===================
-This library uses interrupts to read PWM values. It is only intended to be used with Arduino Uno or Mega boards. It is capable of reading high pulse (normal pwm) or low pulse (inverted pwm).
- 
-Usage:
--------------
-
-1. Copy PWM.cpp and PWM.hpp in your project folder.
-2. Include PWM.hpp in your program. example #include "PWM.hpp"
-3. Create a PWM instance variable and call it what you want. example: PWM my_pwm;
-4. Initialise PWM instance you made and provide pin and trigger condition. example my_pwm.begin(2, 1);
-5. Call getValue to get PWM value. example 'some_variable' = my_pwm.getValue();
+=
+This library uses interrupts to read PWM values. It is capable of reading high pulse (normal pwm) or low pulse (inverted pwm). With upto 20 different PWM signals on supporting boards. To find the pins capable of 'CHANGE' external interrupts on your board, look at:
+https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/
 
 Solo Example:
--------------
+-
 
 ```
 #include "PWM.hpp"
 
-PWM my_pwm;
+PWM my_pwm(2); // Setup pin 2 for input
 
 void setup() {
-  Serial.begin(115200); // Serial for debug
-  my_pwm.begin(2, 1); // PWM on pin 2 reading PWM HIGH duration
+Serial.begin(115200); // Serial for debug
+my_pwm.begin(true); // PWM on pin 2 reading PWM HIGH duration
 }
 
 void loop() {
-  Serial.println(my_pwm.getValue());
-  delay(100);
+Serial.println(my_pwm.getValue());
+delay(100);
 }
 ```
 
@@ -36,41 +28,41 @@ Multi Example:
 ```
 #include "PWM.hpp"
 
-PWM ch1;
-PWM ch2;
-PWM ch3;
-PWM ch4;
-PWM ch5;
-PWM ch6;
+PWM ch1(2); // Setup pin 2 for input
+PWM ch2(3); // Setup pin 3 for input
+PWM ch3(18); // Setup pin 18 for input
+PWM ch4(19); // Setup pin 19 for input
+PWM ch5(20); // Setup pin 20 for input
+PWM ch6(21); // Setup pin 21 for input
 
 void setup() {
-  Serial.begin(115200); // Serial for debug
-  ch1.begin(2, 1); // ch1 on pin 2 reading PWM HIGH duration
-  ch2.begin(3, 1); // ch2 on pin 3 reading PWM HIGH duration
-  ch3.begin(18, 1); // ch3 on pin 18 reading PWM HIGH duration
-  ch4.begin(19, 1); // ch4 on pin 19 reading PWM HIGH duration
-  ch5.begin(20, 1); // ch5 on pin 20 reading PWM HIGH duration
-  ch6.begin(21, 1); // ch6 on pin 21 reading PWM HIGH duration
+Serial.begin(115200); // Serial for debug
+ch1.begin(true); // ch1 on pin 2 reading PWM HIGH duration
+ch2.begin(true); // ch2 on pin 3 reading PWM HIGH duration
+ch3.begin(true); // ch3 on pin 18 reading PWM HIGH duration
+ch4.begin(true); // ch4 on pin 19 reading PWM HIGH duration
+ch5.begin(true); // ch5 on pin 20 reading PWM HIGH duration
+ch6.begin(true); // ch6 on pin 21 reading PWM HIGH duration
 }
 
 void loop() {
-  /*
-   Printing values to Serial for demo.
-  */
-  Serial.print(ch1.getValue());
-  Serial.print("\t");
-  Serial.print(ch2.getValue());
-  Serial.print("\t");
-  Serial.print(ch3.getValue());
-  Serial.print("\t");
-  Serial.print(ch4.getValue());
-  Serial.print("\t");
-  Serial.print(ch5.getValue());
-  Serial.print("\t");
-  Serial.print(ch6.getValue());
-  Serial.print("\t");
-  Serial.println();
-  delay(100);
+/*
+Printing values to Serial for demo.
+*/
+Serial.print(ch1.getValue());
+Serial.print("\t");
+Serial.print(ch2.getValue());
+Serial.print("\t");
+Serial.print(ch3.getValue());
+Serial.print("\t");
+Serial.print(ch4.getValue());
+Serial.print("\t");
+Serial.print(ch5.getValue());
+Serial.print("\t");
+Serial.print(ch6.getValue());
+Serial.print("\t");
+Serial.println();
+delay(100);
 }
 ```
 paypal.me/xkam1x
