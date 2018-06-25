@@ -20,9 +20,15 @@ public:
      Returns the most recent PWM value received.
 
      @return PWM duration in microseconds.
-     @return -1 Error.
      */
-    int getValue();
+    unsigned int getValue();
+    
+    /**
+     Returns the age of recent PWM value.
+
+     @return Age in microseconds.
+     */
+    unsigned long getAge();
     
     /**
      Disables interrupt.

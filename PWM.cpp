@@ -1,13 +1,14 @@
 #include "PWM.hpp"
 
-const byte ISR_ERROR = 250;
+const byte MAX_ISR_COUNT = 20;
 
 byte isr_count = 0;
-byte *isr_pin;
-unsigned int *isr_value;
-bool *isr_last_state;
-bool *isr_trigger_state;
-unsigned long *isr_timer;
+byte isr_pin[MAX_ISR_COUNT];
+unsigned int isr_value[MAX_ISR_COUNT];
+bool isr_last_state[MAX_ISR_COUNT];
+bool isr_trigger_state[MAX_ISR_COUNT];
+unsigned long isr_timer[MAX_ISR_COUNT];
+unsigned long isr_age[MAX_ISR_COUNT];
 
 void ISR_generic(byte isr) {
     unsigned long now = micros();
@@ -17,6 +18,7 @@ void ISR_generic(byte isr) {
             isr_timer[isr] = now;
         } else {
             isr_value[isr] = (unsigned int)(now - isr_timer[isr]);
+            isr_age[isr] = now;
         }
         isr_last_state[isr] = state_now;
     }
@@ -103,35 +105,17 @@ void ISR_19() {
 }
 
 PWM::PWM(byte pin) {
-    if (pin < 0 || pin > 99) {
-        my_isr = ISR_ERROR;
-        return;
-    }
+    my_isr = isr_count;
     isr_count++;
-    if (isr_count == 1) {
-        isr_pin = (byte *)malloc(sizeof(byte) * isr_count);
-        isr_value = (unsigned int *)malloc(sizeof(unsigned int) * isr_count);
-        isr_last_state = (bool *)malloc(sizeof(bool) * isr_count);
-        isr_trigger_state = (bool *)malloc(sizeof(bool) * isr_count);
-        isr_timer = (unsigned long *)malloc(sizeof(unsigned long) * isr_count);
-    } else {
-        isr_pin = (byte *)realloc(isr_pin, sizeof(byte) * isr_count);
-        isr_value = (unsigned int *)(byte *)realloc(isr_pin, sizeof(unsigned int) * isr_count);
-        isr_last_state = (bool *)(byte *)realloc(isr_pin, sizeof(bool) * isr_count);
-        isr_trigger_state = (bool *)(byte *)realloc(isr_pin, sizeof(bool) * isr_count);
-        isr_timer = (unsigned long *)(byte *)realloc(isr_pin, sizeof(unsigned long) * isr_count);
-    }
-    my_isr = isr_count - 1;
+    
     isr_pin[my_isr] = pin;
-    pinMode(pin, INPUT);
+    pinMode(isr_pin[my_isr], INPUT);
 }
 
 int PWM::begin(bool measure_pulse_high) {
-    if (my_isr == ISR_ERROR) {
-        return -1;
-    }
     isr_last_state[my_isr] = digitalRead(isr_pin[my_isr]);
     isr_trigger_state[my_isr] = measure_pulse_high;
+    
     switch (my_isr) {
         case 0:
             attachInterrupt(digitalPinToInterrupt(isr_pin[my_isr]), ISR_0, CHANGE);
@@ -194,21 +178,19 @@ int PWM::begin(bool measure_pulse_high) {
             attachInterrupt(digitalPinToInterrupt(isr_pin[my_isr]), ISR_19, CHANGE);
             break;
         default:
-            break;
+            return -1; // Error.
     }
     return 0; // Success.
 }
 
-int PWM::getValue() {
-    if (my_isr == ISR_ERROR) {
-        return -1;
-    }
+unsigned int PWM::getValue() {
     return isr_value[my_isr];
 }
 
 void PWM::end() {
-    if (my_isr == ISR_ERROR) {
-        return;
-    }
-    detachInterrupt(digitalPinToInterrupt(pins[my_isr]));
+    detachInterrupt(digitalPinToInterrupt(isr_pin[my_isr]));
+}
+
+unsigned long PWM::getAge() {
+    return (micros() - isr_age[my_isr]);
 }
